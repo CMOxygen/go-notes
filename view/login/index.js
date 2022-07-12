@@ -14,20 +14,21 @@ function signIn() {
         password: document.getElementById("login-password").value
     }
 
-    let json = JSON.stringify(usr)
+    let json = JSON.stringify(usr);
+    console.log(json)
 
     $.ajax(loginUrl, {
             data: json,
             contentType: 'application/json',
             type: 'POST',
             success: function (result) {
-                console.log('SUCCESS')
-                console.log(result)
-                console.log(JSON.parse(result))
+                console.log('SUCCESS');
+                console.log(result);
+                console.log(JSON.parse(result));
             },
             error: function (e) {
-                console.log('ERROR')
-                console.log(e)
+                console.log('ERROR');
+                console.log(e);
             }
         }
     );

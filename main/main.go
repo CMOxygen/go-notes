@@ -1,71 +1,15 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-notes-webapp/main-module/dbmanager"
-	"go-notes-webapp/main-module/go_note"
-	"go-notes-webapp/main-module/go_user"
-	"html"
+	"go-notes-webapp/main-module/filemanager"
+	"go-notes-webapp/main-module/handlers"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
-
-//type User struct {
-//	ID       uint32 `json:"id"`
-//	Username string `json:"username"`
-//	Password string `json:"password"`
-//}
-
-//type Note struct {
-//	NoteID    uint32 `json:"noteID"`
-//	UserID    uint32 `json:"userID"`
-//	NoteTitle string `json:"noteTitle"`
-//	NoteText  string `json:"noteText"`
-//}
-
-func processLoginRequest(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(html.EscapeString(r.URL.Path), r.Method)
-
-	switch r.Method {
-	case "GET":
-
-	case "POST":
-		fmt.Println("LOGIN REQUEST POST")
-		var usr go_user.User
-		fmt.Println("REQUEST = ", r.Body)
-		err := json.NewDecoder(r.Body).Decode(&usr)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			panic(err)
-		}
-		fmt.Println(usr)
-	}
-}
-
-func handleLoginPost(w http.ResponseWriter, r *http.Request) {
-	//var usr go_user.User
-	var usr go_user.User
-	err := json.NewDecoder(r.Body).Decode(&usr)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	fmt.Println("usr", usr)
-
-	out, err := json.Marshal(usr)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	_, err = w.Write(out)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
-}
 
 func main() {
 	fmt.Println("Running server...")
@@ -75,38 +19,41 @@ func main() {
 	//r.Handle("/", http.FileServer(http.Dir("../view/"))).Methods("GET")
 	//r.HandleFunc("/", handleLoginPost).Methods("POST")
 
-	var dbm dbmanager.DatabaseManager
-	err := dbm.Connect("go_notes:AlSkDjFhG_2@/go_notes")
+	url, err := filemanager.ReadFile("/etc/server/c/r")
 	if err != nil {
 		panic(err)
 	}
 
-	defer func(dbm *dbmanager.DatabaseManager) {
-		err := dbm.Close()
+	err = handlers.DBM.Connect(strings.Trim(string(url), "\n"))
+	if err != nil {
+		panic(err)
+	}
+	defer func(DBM *dbmanager.DatabaseManager) {
+		err := DBM.Close()
 		if err != nil {
 			panic(err)
 		}
-	}(&dbm)
+	}(&handlers.DBM)
 
-	var usrs []go_user.User
-	var notes []go_note.Note
-
-	err = dbm.Select(&usrs, "", 1)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("SELECT USER ", usrs)
-	err = dbm.Select(&usrs, "username = ?", 123)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("SELECT USER WITH PARAMS ", usrs)
-
-	err = dbm.Select(&notes, "")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("NOTES = ", notes)
+	//var usrs []go_user.User
+	//var notes []go_note.Note
+	//
+	//err = dbm.Select(&usrs, "", 1)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//fmt.Println("SELECT USER ", usrs)
+	//err = dbm.Select(&usrs, "username = ?", 123)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//fmt.Println("SELECT USER WITH PARAMS ", usrs)
+	//
+	//err = dbm.Select(&notes, "")
+	//if err != nil {
+	//	panic(err)
+	//}
+	//fmt.Println("NOTES = ", notes)
 
 	//insertUser := go_user.User{Username: "go_username2", Password: "go_pass2"}
 	//err = dbm.Insert(&insertUser)
@@ -114,8 +61,15 @@ func main() {
 	//	panic(err)
 	//}
 
-	http.Handle("/", http.FileServer(http.Dir("../view/")))
-	http.HandleFunc("/login", processLoginRequest)
+	http.Handle("/", http.FileServer(http.Dir("../view/login/")))
+	//http.Handle("/home", http.FileServer(http.Dir("../view/home/")))
+	//http.Handle("/home", handlers.HandleHomeGet)
+
+	http.HandleFunc("/login", handlers.HandleLoginRequest)
+	http.HandleFunc("/reg", handlers.HandleRegRequest)
+	http.HandleFunc("/create-note", handlers.HandleCreateNote)
+	http.HandleFunc("/remove-note", handlers.HandleRemoveNote)
+	http.HandleFunc("/edit-note", handlers.HandleEditNote)
 
 	s := &http.Server{
 		Addr:         ":8080",

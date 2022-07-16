@@ -1,11 +1,20 @@
 const loginUrl = '/login'
 
+let userData
+
+//JSON.parse(Cookies.get("userdata").replace(/'/g, '"'))
+
 $(document).ready(function () {
+    getUserDataFromCookies()
 
     $("#login-button").click(function () {
         signIn();
     });
 });
+
+function getUserDataFromCookies() {
+    userData = JSON.parse(Cookies.get("userdata").replace(/'/g, '"'))
+}
 
 function signIn() {
 

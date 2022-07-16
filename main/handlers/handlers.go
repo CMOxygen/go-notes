@@ -10,6 +10,7 @@ import (
 	"go-notes-webapp/main-module/sessions"
 	"html"
 	"net/http"
+	"strings"
 )
 
 var DBM dbmanager.DatabaseManager
@@ -60,7 +61,7 @@ func HandleLoginRequest(w http.ResponseWriter, r *http.Request) {
 			}
 			c, err := r.Cookie("sessionID")
 			if err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				//http.Error(w, err.Error(), http.StatusBadRequest)
 				//panic(err)
 				fmt.Println(err.Error())
 			}
@@ -74,6 +75,7 @@ func HandleLoginRequest(w http.ResponseWriter, r *http.Request) {
 
 			}
 			fmt.Println(sm.Sessions)
+			http.SetCookie(w, &http.Cookie{Name: "userdata", Value: strings.ReplaceAll(string(resp), `"`, `'`)})
 
 			_, err = w.Write(resp)
 			if err != nil {

@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"go-notes-webapp/main-module/dbmanager"
+	"go-notes-webapp/main-module/encryption"
 	"go-notes-webapp/main-module/filemanager"
-	"go-notes-webapp/main-module/go_note"
+	"go-notes-webapp/main-module/go_user"
 	"strings"
 	"testing"
 )
@@ -20,12 +22,12 @@ func TestHandleLoginRequest(t *testing.T) {
 		t.Error(err)
 	}
 
-	//p, err := encryption.EncryptSHA([]byte("pass1"))
-	//if err != nil {
-	//	t.Error(err)
-	//}
+	p, err := encryption.EncryptSHA([]byte("pass1"))
+	if err != nil {
+		t.Error(err)
+	}
 	//
-	//u := go_user.User{Username: "user1", Password: p}
+	u := go_user.User{ID: 1, Username: "user1", Password: p}
 	//err = dbm.Insert(&u)
 	//if err != nil {
 	//	t.Error(err)
@@ -42,10 +44,16 @@ func TestHandleLoginRequest(t *testing.T) {
 	//	t.Error(err)
 	//}
 
-	var n []go_note.Note
-	err = dbm.Select(&n, "userId=?", 1)
+	//var n []go_note.Note
+	err = dbm.Select(&u.Notes, "userId=?", u.ID)
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Println(n)
+	fmt.Println(u)
+	j, err := json.Marshal(u)
+	if err != nil {
+		t.Error(err)
+	}
+	fmt.Println(string(j))
+	fmt.Println(strings.ReplaceAll(string(j), `"`, "'"))
 }

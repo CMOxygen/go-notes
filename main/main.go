@@ -61,9 +61,8 @@ func main() {
 	//	panic(err)
 	//}
 
-	http.Handle("/", http.FileServer(http.Dir("../view/login/")))
+	http.Handle("/", http.FileServer(http.Dir("../view/")))
 	//http.Handle("/home", http.FileServer(http.Dir("../view/home/")))
-	//http.Handle("/home", handlers.HandleHomeGet)
 
 	http.HandleFunc("/login", handlers.HandleLoginRequest)
 	http.HandleFunc("/reg", handlers.HandleRegRequest)

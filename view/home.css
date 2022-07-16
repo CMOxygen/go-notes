@@ -1,0 +1,47 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-image: url("billy-huynh-W8KTS-mhFUE-unsplash.jpg");
+}
+
+/*#user-info {*/
+/*    text-align: center;*/
+/*}*/
+
+#user-notes {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+    text-align: center;
+}
+
+.note {
+    background: #333333;
+    margin: 3px;
+    color: #e7e7e7;
+    /*padding-left: 10px;*/
+}
+
+/*.note_header {*/
+/*    font-weight: bold;*/
+/*    font-size: 18px;*/
+/*}*/
+
+.button_remove_note {
+    background-image: url("white-x-mark-icon-465872.png");
+}
+
+.note_header {
+    font-weight: bold;
+    font-size: 18px;
+    background: #242424;
+}
+
+#user-info {
+    background: #242424;
+    /* margin: 3px; */
+    margin-right: 8px;
+    margin-left: 8px;
+    text-align: center;
+    color: #e7e7e7;
+    font-weight: bold;
+}
